@@ -1,0 +1,6 @@
+name: Lockers
+version: '${project.version}'
+main: me.conutik.lockers.Main
+api-version: 1.17
+authors: [ Conutik ]
+description: A lockers plugin for CRP
