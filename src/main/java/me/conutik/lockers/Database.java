@@ -1,65 +1,56 @@
 package me.conutik.lockers;
 
-import java.io.File;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import java.io.File;
+
 public class Database {
+    private Lockers main;
+    private File folder;
+    private File dataFolder;
+    private FileConfiguration config;
+    private File configFile;
 
-    public static Main main;
-
-    static File cfile;
-    static FileConfiguration config;
-    static File folder; // = new File(main.getDataFolder(), "player-data" + File.separator);
-    static File df; // = main.getDataFolder();
-
-    public static void setMain(Main m) {
-        main = m;
-        folder = new File(main.getDataFolder(), "player-data" + File.separator);
-        folder.mkdirs();
-        df = main.getDataFolder();
+    public void setMain(Lockers main) {
+        this.main = main;
+        this.folder = new File(this.main.getDataFolder(), "locker-data" + File.separator);
+        this.folder.mkdirs();
+        this.dataFolder = this.main.getDataFolder();
     }
 
-    public static void create() {
-        cfile = new File(folder, "lockers.yml");
-        if (!df.exists()) df.mkdir();
-        if (!cfile.exists()) {
+    public void createData() {
+        this.configFile = new File(folder, "lockers.yml");
+        if (!this.dataFolder.exists()) this.dataFolder.mkdir();
+        if (!this.configFile.exists()) {
             try {
-                cfile.createNewFile();
+                this.configFile.createNewFile();
             } catch(Exception e) {
-                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Error creating " + cfile.getName() + "!");
+                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Error creating " + this.configFile.getName() + "!");
             }
         }
-        config = YamlConfiguration.loadConfiguration(cfile);
-//        config.set("warnings", "0");
+        this.config = YamlConfiguration.loadConfiguration(this.configFile);
     }
 
-    public static File getfolder() {
-        return folder;
+    public void load() {
+        this.configFile = new File(this.dataFolder, "lockers.yml");
+        this.config = YamlConfiguration.loadConfiguration(this.configFile);
     }
 
-    public static File getfile() {
-        return cfile;
-    }
-
-    public static void load() {
-        cfile = new File(df, "lockers.yml");
-        config = YamlConfiguration.loadConfiguration(cfile);
-    }
-
-    public static FileConfiguration get() {
-        return config;
-    }
-
-    public static void save() {
+    public void save() {
         try {
-            config.save(cfile);
+            this.config.save(this.configFile);
         } catch(Exception e) {
-            Bukkit.broadcast(ChatColor.RED + "Error saving " + cfile.getName() + "!", "ChatColor.ErrorMsgs");
+            Bukkit.broadcast(ChatColor.RED + "Error saving " + this.configFile.getName() + "!", "ChatColor.ErrorMsgs");
         }
     }
+
+    public File getFolder() { return this.folder; }
+
+    public File getFile() { return this.configFile; }
+
+    public FileConfiguration getConfig() { return this.config; }
 }

@@ -18,10 +18,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 
-public class Main extends JavaPlugin implements Listener {
+public class Lockers extends JavaPlugin implements Listener {
+
+    private final Database Database = new Database();
+
     @Override
     public void onEnable() {
-        Database.setMain(this);
+        new Database().setMain(this);
         Bukkit.getPluginManager().registerEvents(this, this);
         Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "Lockers is now working");
     }
@@ -35,11 +38,11 @@ public class Main extends JavaPlugin implements Listener {
 
             if(e.getHand() == EquipmentSlot.OFF_HAND) return;
 
-            Database.create();
+            Database.createData();
 
             Database.load();
 
-            Object thing = Database.config.get(String.valueOf("locker." + e.getClickedBlock().getLocation() + ".islocker"));
+            Object thing = Database.getConfig().get(String.valueOf("locker." + e.getClickedBlock().getLocation() + ".islocker"));
 
 //            if(thing == null) return;
 
@@ -47,7 +50,7 @@ public class Main extends JavaPlugin implements Listener {
 
 //            if(!check) return;
 
-            Object key = Database.config.get(String.valueOf("locker." + e.getClickedBlock().getLocation() + ".keydata"));
+            Object key = Database.getConfig().get(String.valueOf("locker." + e.getClickedBlock().getLocation() + ".keydata"));
 
             if(key == null) {
 
@@ -62,7 +65,7 @@ public class Main extends JavaPlugin implements Listener {
                         let.append(available[random]);
                     }
 
-                    Database.config.set("locker." + e.getClickedBlock().getLocation() + ".keydata", let.toString());
+                    Database.getConfig().set("locker." + e.getClickedBlock().getLocation() + ".keydata", let.toString());
 
                 ItemStack items = new ItemStack(Material.TRIPWIRE_HOOK);
 
@@ -75,9 +78,6 @@ public class Main extends JavaPlugin implements Listener {
                 lores.add("");
 
                 lores.add(ChatColor.GOLD + "This key is used for locker: " + let);
-//                lores.add(ChatColor.GOLD + "to forge powerful items, that were never");
-//                lores.add(ChatColor.GOLD + "meant to not be discovered.");
-//                lores.add(ChatColor.RED + "" + ChatColor.BOLD + ChatColor.UNDERLINE + "Use this item with caution");
 
                 meta.setLore(lores);
 
@@ -120,7 +120,7 @@ public class Main extends JavaPlugin implements Listener {
 
             Inventory inv = Bukkit.createInventory(null, 18, "Locker");
 
-            Object items = Database.config.get("locker." + e.getClickedBlock().getLocation() + ".data");
+            Object items = Database.getConfig().get("locker." + e.getClickedBlock().getLocation() + ".data");
             ArrayList item = (ArrayList) items;
 
             if (items == null) {
@@ -135,7 +135,7 @@ public class Main extends JavaPlugin implements Listener {
                 e.getPlayer().openInventory(inv);
             }
 
-            Database.config.set("inlocker." + e.getPlayer().getUniqueId(), e.getClickedBlock().getLocation());
+            Database.getConfig().set("inlocker." + e.getPlayer().getUniqueId(), e.getClickedBlock().getLocation());
 
             Database.save();
         }
@@ -149,11 +149,11 @@ public class Main extends JavaPlugin implements Listener {
         if(!e.getPlayer().getOpenInventory().getTitle().equals("Locker")) return;
 
 
-        Database.create();
+        Database.createData();
 
         Database.load();
 
-        Object thing = Database.config.get("inlocker." + e.getPlayer().getUniqueId());
+        Object thing = Database.getConfig().get("inlocker." + e.getPlayer().getUniqueId());
 
 
 //        Thing: Temporary location of locker through player
@@ -166,7 +166,7 @@ public class Main extends JavaPlugin implements Listener {
 
         Location check = (Location) thing;
 
-        thing = Database.config.get(String.valueOf(check));
+        thing = Database.getConfig().get(String.valueOf(check));
 
 //        if(thing == null) return;
 
@@ -174,7 +174,7 @@ public class Main extends JavaPlugin implements Listener {
 
 //        if(!check2) return;
 
-        Database.config.set("locker." + check + ".data", e.getInventory().getStorageContents());
+        Database.getConfig().set("locker." + check + ".data", e.getInventory().getStorageContents());
 
         Database.save();
 
